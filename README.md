@@ -1,0 +1,1 @@
+Testing: `python setup.py test` (ideally in a virtualenv)
