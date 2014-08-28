@@ -26,7 +26,7 @@ class ZipkinApiTestCase(TestCase):
     def test_build_annotation(self):
         value, duration = Mock(), Mock()
         annotation = self.api._build_annotation(value, duration)
-        self.assertEqual(annotation.timestamp, self.mock_time.time.return_value * 1000)
+        self.assertEqual(annotation.timestamp, self.mock_time.time.return_value * 1000 * 1000)
         self.assertEqual(annotation.value, value)
         self.assertEqual(annotation.duration, duration)
         self.assertEqual(annotation.host, self.api.endpoint)
@@ -114,5 +114,5 @@ class ZipkinApiTestCase(TestCase):
         )
         self.store.get_rpc_name.return_value = 'test-name'
         self.mock_time.time.return_value = 1024
-        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMIAAEKAACJAAAKAAEAAAAAAAAAAQsAAgAAAAJzcwwAAwgAAQoAAIkAAA8ACAwAAAABCwABAAAAB2F3ZXNvbWULAAIAAAABMQgAAwAAAAAMAAQIAAEKAACJAAACAAkAAA==')
-        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMIAAEKAACJAAAKAAEAAAAAAAAAAQsAAgAAAAJzcwwAAwgAAQoAAIkAAA8ACAwAAAABCwABAAAAB2F3ZXNvbWULAAIAAAABMQgAAwAAAAAMAAQIAAEKAACJAAACAAkAAA==')
+        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMAAAoAAQAAAAAAAAABCwACAAAAAnNzDAADAAAPAAgMAAAAAQsAAQAAAAdhd2Vzb21lCwACAAAAATEIAAMAAAAADAAEAAACAAkAAA==')
+        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMAAAoAAQAAAAAAAAABCwACAAAAAnNzDAADAAAPAAgMAAAAAQsAAQAAAAdhd2Vzb21lCwACAAAAATEIAAMAAAAADAAEAAACAAkAAA==')
