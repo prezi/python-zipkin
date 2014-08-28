@@ -15,7 +15,7 @@ class ZipkinApi(object):
     def __init__(self, store=None, service_name=None):
         self.store = store or default_store
         self.endpoint = Endpoint(
-            ipv4=self._ipv4_to_long(socket.gethostbyname(socket.getfqdn())),
+            ipv4=self._get_my_ip(),
             port=None,
             service_name=service_name or settings.ZIPKIN_SERVICE_NAME
         )
@@ -34,6 +34,12 @@ class ZipkinApi(object):
         protocol = TBinaryProtocol.TBinaryProtocolAccelerated(trans=trans)
         self._build_span().write(protocol)
         return base64.b64encode(trans.getvalue())
+
+    def _get_my_ip(self):
+        try:
+            self._ipv4_to_long(socket.gethostbyname(socket.gethostname()))
+        except Exception:
+            return None
 
     def _build_span(self):
         zipkin_data = self.store.get()
