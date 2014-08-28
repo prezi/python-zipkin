@@ -26,7 +26,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
         ],
-    install_requires=[],
+    install_requires=['thrift >= 0.9.1'],
     tests_require=['mock >= 1.0', 'unittest2 >= 0.5.1'],
     test_suite='tests.main',
     )

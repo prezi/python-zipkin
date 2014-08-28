@@ -1,31 +1,89 @@
 from unittest2.case import TestCase
-from mock import patch, Mock
+from mock import patch, Mock, sentinel
 
-from django_zipkin.data_store import ThreadLocalDataStore
+from django_zipkin.data_store import BaseDataStore, ThreadLocalDataStore
 from django_zipkin.zipkin_data import ZipkinData
+from django_zipkin._thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
 
 from helpers import DjangoZipkinTestHelpers
 
 
-__all__ = ['ThreadLocalDataStoreTestCase']
+__all__ = ['BaseDataStoreTestCase', 'ThreadLocalDataStoreTestCase']
+
+
+class BaseDataStoreTestCase(TestCase):
+    def setUp(self):
+        self.store = BaseDataStore()
+        self.store._record_annotation = Mock()
+        self.store._record_binary_annotation = Mock()
+
+    def test_record_noop_if_not_sampled(self):
+        self.store.get = lambda: ZipkinData(sampled=False)
+        self.store._record_annotation = Mock()
+        self.store._record_binary_annotation = Mock()
+        self.store.record(Mock())
+        self.assertFalse(self.store._record_annotation.called)
+        self.assertFalse(self.store._record_binary_annotation.called)
+
+    def test_record_delegates_if_sampled(self):
+        self.store.get = lambda: ZipkinData(sampled=True)
+        annotation = Mock(spec=Annotation)
+        binary_annotation = Mock(spec=BinaryAnnotation)
+        self.store.record(annotation)
+        self.store.record(binary_annotation)
+        self.store._record_annotation.assert_called_once_with(annotation)
+        self.store._record_binary_annotation.assert_called_once_with(binary_annotation)
 
 
 class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
     def setUp(self):
-        self.threading_local_patcher = patch('django_zipkin.data_store.threading.local')
-        self.mock_threading_local = self.threading_local_patcher.start()
+        self.local_patcher = patch('django_zipkin.data_store.ThreadLocalDataStore.thread_local_data')
+        self.mock_local = self.local_patcher.start()
 
     def tearDown(self):
-        self.threading_local_patcher.stop()
-
-    def test_get_returns_what_is_in_threadlocal_storage(self):
-        self.assertEqual(self.mock_threading_local.return_value.zipkin_data, ThreadLocalDataStore().get())
+        self.local_patcher.stop()
 
     def test_get_without_set_returns_empty_zipkin_data(self):
-        self.mock_threading_local.return_value = object()
         self.assertZipkinDataEquals(ZipkinData(), ThreadLocalDataStore().get())
+
+    def test_get_returns_what_was_set(self):
+        store = ThreadLocalDataStore()
+        data = Mock()
+        store.set(data)
+        self.assertEqual(data, store.get())
 
     def test_set_writes_to_threadlocal_storage(self):
         data = Mock()
         ThreadLocalDataStore().set(data)
-        self.assertEqual(self.mock_threading_local.return_value.zipkin_data, data)
+        self.assertEqual(self.mock_local.zipkin_data, data)
+
+    def test_annotations(self):
+        annotations = [Mock(spec=Annotation), Mock(spec=Annotation)]
+        binary_annotations = [Mock(spec=BinaryAnnotation), Mock(spec=BinaryAnnotation)]
+        store = ThreadLocalDataStore()
+        store.set(ZipkinData(sampled=True))
+        for annotation in annotations + binary_annotations:
+            store.record(annotation)
+        self.assertListEqual(annotations, store.get_annotations())
+        self.assertListEqual(binary_annotations, store.get_binary_annotations())
+
+    def test_rpc_name(self):
+        store = ThreadLocalDataStore()
+        self.assertIsNone(store.get_rpc_name())
+        store.set_rpc_name(sentinel.rpc_name)
+        self.assertEqual(store.get_rpc_name(), sentinel.rpc_name)
+
+    def test_clear(self):
+        annotations = [Mock(spec=Annotation), Mock(spec=Annotation)]
+        binary_annotations = [Mock(spec=BinaryAnnotation), Mock(spec=BinaryAnnotation)]
+        store = ThreadLocalDataStore()
+        store.set(ZipkinData(sampled=True, trace_id=Mock()))
+        store.set_rpc_name(Mock())
+        for annotation in annotations + binary_annotations:
+            store.record(annotation)
+        store.clear()
+        self.assertListEqual([], store.get_annotations())
+        self.assertListEqual([], store.get_binary_annotations())
+        self.assertZipkinDataEquals(ZipkinData(), store.get())
+        self.assertIsNone(store.get_rpc_name())
+

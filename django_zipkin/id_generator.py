@@ -1,6 +1,8 @@
 import random
 
 from zipkin_data import ZipkinId
+from utils import import_class
+import defaults as settings
 
 
 class BaseIdGenerator(object):
@@ -23,4 +25,4 @@ class SimpleIdGenerator(BaseIdGenerator):
         return self.generate_id()
 
 
-default = SimpleIdGenerator()  # TODO: Make the default class configurable
+default = import_class(settings.ZIPKIN_ID_GENERATOR_CLASS)()
