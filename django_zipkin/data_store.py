@@ -48,9 +48,6 @@ class BaseDataStore(object):
 class ThreadLocalDataStore(BaseDataStore):
     thread_local_data = threading.local()
 
-    def __init__(self):
-        self.clear()
-
     def get(self):
         return self.thread_local_data.zipkin_data
 
@@ -75,11 +72,13 @@ class ThreadLocalDataStore(BaseDataStore):
     def get_rpc_name(self):
         return self.thread_local_data.rpc_name
 
-    def clear(self):
-        self.thread_local_data.zipkin_data = ZipkinData()
-        self.thread_local_data.annotations = []
-        self.thread_local_data.binary_annotations = []
-        self.thread_local_data.rpc_name = None
+    @classmethod
+    def clear(cls):
+        cls.thread_local_data.zipkin_data = ZipkinData()
+        cls.thread_local_data.annotations = []
+        cls.thread_local_data.binary_annotations = []
+        cls.thread_local_data.rpc_name = None
+ThreadLocalDataStore.clear()
 
 
 default = import_class(settings.ZIPKIN_DATA_STORE_CLASS)()

@@ -44,7 +44,9 @@ class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
         self.local_patcher.stop()
 
     def test_get_without_set_returns_empty_zipkin_data(self):
-        self.assertZipkinDataEquals(ZipkinData(), ThreadLocalDataStore().get())
+        store = ThreadLocalDataStore()
+        store.clear()
+        self.assertZipkinDataEquals(ZipkinData(), store.get())
 
     def test_get_returns_what_was_set(self):
         store = ThreadLocalDataStore()
@@ -61,6 +63,7 @@ class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
         annotations = [Mock(spec=Annotation), Mock(spec=Annotation)]
         binary_annotations = [Mock(spec=BinaryAnnotation), Mock(spec=BinaryAnnotation)]
         store = ThreadLocalDataStore()
+        store.clear()
         store.set(ZipkinData(sampled=True))
         for annotation in annotations + binary_annotations:
             store.record(annotation)
@@ -69,6 +72,7 @@ class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
 
     def test_rpc_name(self):
         store = ThreadLocalDataStore()
+        store.clear()
         self.assertIsNone(store.get_rpc_name())
         store.set_rpc_name(sentinel.rpc_name)
         self.assertEqual(store.get_rpc_name(), sentinel.rpc_name)

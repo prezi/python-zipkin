@@ -40,7 +40,7 @@ class ZipkinApi(object):
         return Span(
             id=zipkin_data.span_id.get_binary(),
             trace_id=zipkin_data.trace_id.get_binary(),
-            parent_id=zipkin_data.parent_span_id.get_binary(),
+            parent_id=zipkin_data.parent_span_id.get_binary() if zipkin_data.parent_span_id is not None else None,
             name=self.store.get_rpc_name(),
             annotations=self.store.get_annotations(),
             binary_annotations=self.store.get_binary_annotations()
