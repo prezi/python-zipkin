@@ -53,7 +53,7 @@ class ZipkinApi(object):
         )
 
     def _build_annotation(self, value, duration=None):
-        return Annotation(time.time() * 1000, value, self.endpoint, duration)
+        return Annotation(time.time() * 1000 * 1000, value, self.endpoint, duration)
 
     def _build_binary_annotation(self, key, value):
         annotation_type = self._binary_annotation_type(value)
