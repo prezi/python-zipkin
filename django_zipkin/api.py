@@ -6,6 +6,7 @@ import base64
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
 
+import constants
 import defaults as settings
 from data_store import default as default_store
 from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation, Endpoint, AnnotationType, Span
@@ -34,6 +35,18 @@ class ZipkinApi(object):
         protocol = TBinaryProtocol.TBinaryProtocolAccelerated(trans=trans)
         self._build_span().write(protocol)
         return base64.b64encode(trans.getvalue())
+
+    def get_headers_for_downstream_request(self):
+        data = self.store.get()
+        headers = {
+            constants.TRACE_ID_HDR_NAME: data.trace_id.get_hex(),
+            constants.SPAN_ID_HDR_NAME: data.span_id.get_hex(),
+            constants.SAMPLED_HDR_NAME: data.sampled,
+            constants.FLAGS_HDR_NAME: data.flags
+        }
+        if data.parent_span_id is not None:
+            headers[constants.PARENT_SPAN_ID_HDR_NAME] = data.parent_span_id.get_hex()
+        return headers
 
     def _get_my_ip(self):
         try:
