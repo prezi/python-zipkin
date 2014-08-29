@@ -48,6 +48,9 @@ class ZipkinApi(object):
             }
             if data.parent_span_id is not None:
                 headers[constants.PARENT_SPAN_ID_HDR_NAME] = data.parent_span_id.get_hex()
+            for key in headers.keys():
+                if headers[key] is None:
+                    del headers[key]
             return headers
         except Exception:
             logging.root.exception("failed_to_build_downstream_request_headers")
