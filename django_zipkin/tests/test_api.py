@@ -105,14 +105,14 @@ class ZipkinApiTestCase(TestCase):
             trace_id=generator.generate_trace_id(),
             span_id=generator.generate_span_id(),
             parent_span_id=generator.generate_span_id(),
-            sampled=sentinel.sampled,
+            sampled=True,
             flags=sentinel.flags
         )
         self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
             'X-B3-TraceId': data.trace_id.get_hex(),
             'X-B3-SpanId': data.span_id.get_hex(),
             'X-B3-ParentSpanId': data.parent_span_id.get_hex(),
-            'X-B3-Sampled': data.sampled,
+            'X-B3-Sampled': 'true',
             'X-B3-Flags': data.flags
         })
 
@@ -121,13 +121,13 @@ class ZipkinApiTestCase(TestCase):
         self.store.get.return_value = data = ZipkinData(
             trace_id=generator.generate_trace_id(),
             span_id=generator.generate_span_id(),
-            sampled=sentinel.sampled,
+            sampled=True,
             flags=sentinel.flags
         )
         self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
             'X-B3-TraceId': data.trace_id.get_hex(),
             'X-B3-SpanId': data.span_id.get_hex(),
-            'X-B3-Sampled': data.sampled,
+            'X-B3-Sampled': 'true',
             'X-B3-Flags': data.flags
         })
 

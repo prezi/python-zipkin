@@ -43,7 +43,7 @@ class ZipkinApi(object):
             headers = {
                 constants.TRACE_ID_HDR_NAME: data.trace_id.get_hex(),
                 constants.SPAN_ID_HDR_NAME: data.span_id.get_hex(),
-                constants.SAMPLED_HDR_NAME: data.sampled,
+                constants.SAMPLED_HDR_NAME: self._bool_to_str(data.sampled),
                 constants.FLAGS_HDR_NAME: data.flags
             }
             if data.parent_span_id is not None:
@@ -55,6 +55,11 @@ class ZipkinApi(object):
         except Exception:
             logging.root.exception("failed_to_build_downstream_request_headers")
             return {}
+
+    def _bool_to_str(self, b):
+        if b:
+            return 'true'
+        return 'false'
 
     def _get_my_ip(self):
         try:
