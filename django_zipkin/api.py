@@ -2,6 +2,7 @@ import struct
 import socket
 import time
 import base64
+import logging
 
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
@@ -37,16 +38,20 @@ class ZipkinApi(object):
         return base64.b64encode(trans.getvalue())
 
     def get_headers_for_downstream_request(self):
-        data = self.store.get()
-        headers = {
-            constants.TRACE_ID_HDR_NAME: data.trace_id.get_hex(),
-            constants.SPAN_ID_HDR_NAME: data.span_id.get_hex(),
-            constants.SAMPLED_HDR_NAME: data.sampled,
-            constants.FLAGS_HDR_NAME: data.flags
-        }
-        if data.parent_span_id is not None:
-            headers[constants.PARENT_SPAN_ID_HDR_NAME] = data.parent_span_id.get_hex()
-        return headers
+        try:
+            data = self.store.get()
+            headers = {
+                constants.TRACE_ID_HDR_NAME: data.trace_id.get_hex(),
+                constants.SPAN_ID_HDR_NAME: data.span_id.get_hex(),
+                constants.SAMPLED_HDR_NAME: data.sampled,
+                constants.FLAGS_HDR_NAME: data.flags
+            }
+            if data.parent_span_id is not None:
+                headers[constants.PARENT_SPAN_ID_HDR_NAME] = data.parent_span_id.get_hex()
+            return headers
+        except Exception:
+            logging.root.exception("failed_to_build_downstream_request_headers")
+            return {}
 
     def _get_my_ip(self):
         try:
