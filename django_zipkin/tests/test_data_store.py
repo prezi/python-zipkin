@@ -91,3 +91,10 @@ class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
         self.assertZipkinDataEquals(ZipkinData(), store.get())
         self.assertIsNone(store.get_rpc_name())
 
+    def test_dont_freak_out_if_thread_local_store_is_gone(self):
+        store = ThreadLocalDataStore()
+        ThreadLocalDataStore.thread_local_data = object()
+        self.assertIsNone(store.get_rpc_name())
+        self.assertZipkinDataEquals(ZipkinData(), store.get())
+
+
