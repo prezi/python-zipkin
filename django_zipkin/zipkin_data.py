@@ -51,3 +51,6 @@ class ZipkinData(object):
         self.parent_span_id = parent_span_id
         self.sampled = sampled
         self.flags = flags
+
+    def is_tracing(self):
+        return self.sampled or self.flags

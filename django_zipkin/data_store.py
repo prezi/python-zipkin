@@ -21,7 +21,7 @@ class BaseDataStore(object):
         raise NotImplementedError
 
     def record(self, annotation):
-        if not self.get().sampled:
+        if not self.get().is_tracing():
             return
         if isinstance(annotation, Annotation):
             self._record_annotation(annotation)
