@@ -45,7 +45,7 @@ class ZipkinData(object):
     """
     The tracing data being passed between services via HTTP headers
     """
-    def __init__(self, trace_id=None, span_id=None, parent_span_id=None, sampled=False, flags=None):
+    def __init__(self, trace_id=None, span_id=None, parent_span_id=None, sampled=False, flags=False):
         self.trace_id = trace_id
         self.span_id = span_id
         self.parent_span_id = parent_span_id

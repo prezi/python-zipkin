@@ -106,14 +106,14 @@ class ZipkinApiTestCase(TestCase):
             span_id=generator.generate_span_id(),
             parent_span_id=generator.generate_span_id(),
             sampled=True,
-            flags=sentinel.flags
+            flags=True
         )
         self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
             'X-B3-TraceId': data.trace_id.get_hex(),
             'X-B3-SpanId': data.span_id.get_hex(),
             'X-B3-ParentSpanId': data.parent_span_id.get_hex(),
             'X-B3-Sampled': 'true',
-            'X-B3-Flags': data.flags
+            'X-B3-Flags': '1'
         })
 
     def test_downstream_request_headers_without_parent_span_id(self):
@@ -122,13 +122,13 @@ class ZipkinApiTestCase(TestCase):
             trace_id=generator.generate_trace_id(),
             span_id=generator.generate_span_id(),
             sampled=True,
-            flags=sentinel.flags
+            flags=0
         )
         self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
             'X-B3-TraceId': data.trace_id.get_hex(),
             'X-B3-SpanId': data.span_id.get_hex(),
             'X-B3-Sampled': 'true',
-            'X-B3-Flags': data.flags
+            'X-B3-Flags': '0'
         })
 
     def test_integration(self):
