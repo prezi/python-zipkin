@@ -131,6 +131,13 @@ class ZipkinApiTestCase(TestCase):
             'X-B3-Flags': '0'
         })
 
+    def test_downstream_request_headers_with_empty_data(self):
+        self.store.get.return_value = ZipkinData()
+        self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
+            'X-B3-Sampled': 'false',
+            'X-B3-Flags': '0'
+        })
+
     def test_integration(self):
         binary_annotations = [self.api._build_binary_annotation('awesome', True)]
         annotations = [

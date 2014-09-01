@@ -41,8 +41,8 @@ class ZipkinApi(object):
         try:
             data = self.store.get()
             headers = {
-                constants.TRACE_ID_HDR_NAME: data.trace_id.get_hex(),
-                constants.SPAN_ID_HDR_NAME: data.span_id.get_hex(),
+                constants.TRACE_ID_HDR_NAME: data.trace_id.get_hex() if data.trace_id is not None else None,
+                constants.SPAN_ID_HDR_NAME: data.span_id.get_hex() if data.span_id is not None else None,
                 constants.SAMPLED_HDR_NAME: self._bool_to_str_true_false(data.sampled),
                 constants.FLAGS_HDR_NAME: self._bool_to_str_1_0(data.flags)
             }
