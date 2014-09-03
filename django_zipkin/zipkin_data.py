@@ -36,8 +36,7 @@ class ZipkinId(object):
     def from_hex(cls, s):
         if s is None:
             return None
-        if len(s) % 2 != 0:
-            s = '0%s' % s
+        s = s.zfill(16)
         return cls(cls.STRUCT.unpack(s.decode('hex'))[0])
 
 

@@ -23,11 +23,17 @@ class ZipkinIdTestCase(TestCase):
         self.assertEqual(ZipkinId.from_binary(val).get_binary(), val)
 
     def test_from_hex(self):
-        hex = 'ffffffffffffffff'
-        zid = ZipkinId.from_hex(hex)
-        self.assertEqual(zid.get_binary(), -1)
-        self.assertEqual(zid.get_hex(), hex)
+        cases = [
+            ('ffffffffffffffff', -1),
+            ('c564d8606f4400', 55561450905617408),
+            ('aa', 170)
+        ]
+        for hex, expected_binary in cases:
+            zid = ZipkinId.from_hex(hex)
+            self.assertEqual(zid.get_binary(), expected_binary, hex)
+            self.assertEqual(zid.get_hex(), hex.zfill(16))
 
     def test_None_input(self):
         self.assertIsNone(ZipkinId.from_hex(None))
         self.assertIsNone(ZipkinId.from_binary(None))
+
