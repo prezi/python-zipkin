@@ -37,7 +37,7 @@ class ZipkinId(object):
         if s is None:
             return None
         s = s.zfill(16)
-        return cls(cls.STRUCT.unpack(s.decode('hex'))[0])
+        return cls(cls.STRUCT.unpack(binascii.unhexlify(s))[0])
 
 
 class ZipkinData(object):

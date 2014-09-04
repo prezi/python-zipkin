@@ -28,7 +28,7 @@ class ZipkinApiTestCase(TestCase):
         value, duration = Mock(), Mock()
         annotation = self.api._build_annotation(value, duration)
         self.assertEqual(annotation.timestamp, self.mock_time.time.return_value * 1000 * 1000)
-        self.assertEqual(annotation.value, value)
+        self.assertEqual(annotation.value, str(value))
         self.assertEqual(annotation.duration, duration)
         self.assertEqual(annotation.host, self.api.endpoint)
 
@@ -137,6 +137,22 @@ class ZipkinApiTestCase(TestCase):
             'X-B3-Sampled': 'false',
             'X-B3-Flags': '0'
         })
+
+    def test_nonascii_input(self):
+        uri_in = u'\ufffd\ufffd/\x01'
+        uri_out = uri_in.encode('utf-8')
+        self.store.get.return_value = ZipkinData(
+            trace_id=ZipkinId(42),
+            span_id=ZipkinId(4242),
+            parent_span_id=ZipkinId(1773),
+            sampled=True
+        )
+        self.store.get_binary_annotations.return_value = [self.api._build_binary_annotation('http.uri', uri_in)]
+        self.store.get_annotations.return_value = [self.api._build_annotation(uri_in)]
+        self.store.get_rpc_name.return_value = 'test-rpc-name'
+        self.api.build_log_message()  # Assert no exception is raised
+        self.assertEqual(self.api._build_span().annotations[0].value, uri_out)
+        self.assertEqual(self.api._build_span().binary_annotations[0].value, uri_out)
 
     def test_integration(self):
         binary_annotations = [self.api._build_binary_annotation('awesome', True)]
