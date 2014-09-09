@@ -68,7 +68,7 @@ class ZipkinApi(object):
 
     def _get_my_ip(self):
         try:
-            self._ipv4_to_long(socket.gethostbyname(socket.gethostname()))
+            return self._ipv4_to_long(socket.gethostbyname(socket.gethostname()))
         except Exception:
             return None
 
