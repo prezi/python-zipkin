@@ -8,6 +8,7 @@ TBD: Travis CI banner once the repo is opened and Travis CI integration is a go
 
 Install the library:
 
+TBD: release to PyPI, tag release, update this
 ```
 pip install https://github.com/prezi/django-zipkin.git
 ```
@@ -17,7 +18,7 @@ Add the middleware to the list of installed middlewares:
 ```python
 MIDDLEWARE_CLASSES = ('...',
                       'django_zipkin.middleware.ZipkinMiddleware',
-                     '...')
+                      '...')
 ```
 
 Set the name your service will use to identify itself. This will appear as the service name in Zipkin.
