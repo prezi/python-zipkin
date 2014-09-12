@@ -131,7 +131,7 @@ the users code. The default implementation for this is to use thread-local stora
 it, so this implementation works fine even under `gunicorn` and friends. You can provide your own implementation - it
 needs to implement the methods of `django_zipkin.data_store.BaseDataStore`.
  
-**`ZIPKIN_ID_GENERATOR_CLASS`**: Default `'django_zipkin.id_generator.SimpleIdGenerator'`. The class used to generate span
+**ZIPKIN_ID_GENERATOR_CLASS**: Default `'django_zipkin.id_generator.SimpleIdGenerator'`. The class used to generate span
 and trace ids if we don't get one from the incoming request.
 
 ### Configglue
@@ -151,11 +151,15 @@ class MySchema(...):
 
 ## Hacking
 
-TBD: branch, PR
-TBD: testing
+See [CONTRIBUTING.md](https://github.com/prezi/django-zipkin/blob/master/CONTRIBUTING.md) for guidelines.
 
-### Implementation details
-TBD: thread local store
-TBD: internal architecture
+You can start hacking on `django-zipkin` with:
 
-Testing: `python setup.py test` (ideally in a virtualenv)
+```sh
+git clone https://github.com/prezi/django-zipkin.git
+cd django-zipkin
+git remote rename origin upstream
+virtualenv virtualenv
+. virtualenv/bin/activate
+python setup.py test
+```
