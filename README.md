@@ -119,15 +119,22 @@ for any progress on this. If you want to find the value on the web UI, you can o
 You can customize the way `django-zipkin` works with the following settings values. They are defined in
 `django_zipkin/defaults.py`.
 
-Settings variable | Default value | What is it?
-------------------|---------------|-----------------
-ZIPKIN_SERVICE_NAME          | `None` | The service name that will appear on Zipkin (the `service_name` value in the sent Thrift objects)
-ZIPKIN_LOGGER_NAME           | `'zipkin'` | The name of the logger to use when sending Zipkin messages through the Python logging system
-ZIPKIN_DATA_STORE_CLASS      | `'django_zipkin.data_store.ThreadLocalDataStore'` | `django-zipkin` needs to pass some data from the request processor to the response processor. 
-                                                                                   This same data needs to be accessible from anywhere in the users code. The default implementation for this is to use
-                                                                                   thread-local storage. `gevent` and `greenlet` monkey-patch it, so this implementation works fine even under `gunicorn` and friends.
-                                                                                   You can provide your own implementation - it needs to implement the methods of `django_zipkin.data_store.BaseDataStore`.
-ZIPKIN_ID_GENERATOR_CLASS    | `'django_zipkin.id_generator.SimpleIdGenerator'` | The class used to generate span and trace ids if we don't get one from the incoming request.
+### Settings variables
+
+*`ZIPKIN_SERVICE_NAME`*: Default `None`. The service name that will appear on Zipkin (the `service_name` value in the sent Thrift objects).
+
+*`ZIPKIN_LOGGER_NAME`*: Default `'zipkin'`. The name of the logger to use when sending Zipkin messages through the Python logging system.
+
+*`ZIPKIN_DATA_STORE_CLASS`*: Default `'django_zipkin.data_store.ThreadLocalDataStore'`. `django-zipkin` needs to pass 
+some data from the request processor to the response processor. This same data needs to be accessible from anywhere in 
+the users code. The default implementation for this is to use thread-local storage. `gevent` and `greenlet` monkey-patch
+it, so this implementation works fine even under `gunicorn` and friends. You can provide your own implementation - it
+needs to implement the methods of `django_zipkin.data_store.BaseDataStore`.
+ 
+*`ZIPKIN_ID_GENERATOR_CLASS`*: Default `'django_zipkin.id_generator.SimpleIdGenerator'`. The class used to generate span
+and trace ids if we don't get one from the incoming request.
+
+### Configglue
 
 `configglue` support is provided via `django_zipkin.schema`; you can include it into your applications schema like this:
 
