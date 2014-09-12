@@ -136,7 +136,7 @@ and trace ids if we don't get one from the incoming request.
 
 ### Configglue
 
-`configglue` support is provided via `django_zipkin.schema`; you can include it into your applications schema like this:
+`configglue` support is provided via `django_zipkin.schema`; you can include it into your own schema like this:
 
 
 ```python

@@ -9,5 +9,5 @@ without warnings.
 # License
 By contributing your code, you agree to license your contribution under the 
 terms of the Do What The Fuck You Want To Public License
-https://github.com/prezi/django-zipkin/blob/master/LICENSE
+https://github.com/prezi/django-zipkin/blob/master/LICENSE.txt
 
