@@ -70,18 +70,82 @@ headers = api.get_headers_for_downstream_request()
 ```
 
 ### Automatically generated annotations
-TBD: list, when is each one added, example values
+
+`sr` and `ss` annotations are automatically added by the middleware. The following binary (key-value) annotations are
+also added:
+
+Annotation | Example value | Added if
+-----------|---------------|---------
+http.uri                  | `/api/v1/login` | Always
+http.statuscode           | `200`           | Always
+django.view.func_name     | `login`         | Always
+django.view.class         | `AuthView`      | If the view function is the method of a view-based class
+django.view.args          | `('oauth')`     | Always
+django.view.kwargs        | `{"next": "/index"}` | Always
+django.url_name           | `myapp.views.login`  | Always
+django.tastypie.resource_name | `user`      | If the request is served by Tastypie (specifically, when the view gets a kwarg `resource_name`)
+
+It's up to you to add `cs` and `cr` (client send and client receive) annotations in whatever client you use.
 
 ## Things to keep in mind
-TBD: middleware order, special annotations
+
+### Middleware order
+
+If a middleware above `django-zipkin` returns a response, then the request processing part of `django-zipkin` will never
+be called, resulting in an inconsistent internal state. In this case your custom annotations and most of the automatically
+added annotations will be lost, and timing information will be incorrect. An extra annotation will be added with the following value:`No ZipkinData
+in thread local store. This can happen if process_request didn't run due to a previous middleware returning a response.
+Timing information is invalid.` 
+
+### View wrappers
+
+If your view is wrapped (for example with a decorator) without using the `functools.wraps` decorator, then `django-zipkin`
+has no way of retrieving the name of the view. In this case `django.view.func_name` will be the function name of the
+wrapper function. This is something you'll want to avoid in your own code.
+
+One offender is Tastypie: `django.view.func_name` will always be `wrapper`. On requests served by Tastypie
+the annotation `django.tastypie.resource_name` will be added with the name of the Tastypie resource, and `django.url_name`
+will be something useful like `api_dispatch_list`.
+
+### Zipkin UI vs. JSON annotation values
+
+The `django.view.kwargs` annotation has a JSON string as its value for easier automated processing. Unfortunately
+this make the UI display the value as `[object Object]`. See [Zipkin issue #410](https://github.com/twitter/zipkin/issues/410)
+for any progress on this. If you want to find the value on the web UI, you can open the page source and search for
+`django.view.kwargs`.
 
 ## Customizing
-TBD: config values
-TBD: (django-)configglue support
+
+You can customize the way `django-zipkin` works with the following settings values. They are defined in
+`django_zipkin/defaults.py`.
+
+Settings variable | Default value | What is it?
+------------------|---------------|-----------------
+ZIPKIN_SERVICE_NAME          | `None` | The service name that will appear on Zipkin (the `service_name` value in the sent Thrift objects)
+ZIPKIN_LOGGER_NAME           | `'zipkin'` | The name of the logger to use when sending Zipkin messages through the Python logging system
+ZIPKIN_DATA_STORE_CLASS      | `'django_zipkin.data_store.ThreadLocalDataStore'` | `django-zipkin` needs to pass some data from the request processor to the response processor. 
+                                                                                   This same data needs to be accessible from anywhere in the users code. The default implementation for this is to use
+                                                                                   thread-local storage. `gevent` and `greenlet` monkey-patch it, so this implementation works fine even under `gunicorn` and friends.
+                                                                                   You can provide your own implementation - it needs to implement the methods of `django_zipkin.data_store.BaseDataStore`.
+ZIPKIN_ID_GENERATOR_CLASS    | `'django_zipkin.id_generator.SimpleIdGenerator'` | The class used to generate span and trace ids if we don't get one from the incoming request.
+
+`configglue` support is provided via `django_zipkin.schema`; you can include it into your applications schema like this:
+
+
+```python
+from django_zipkin.schema import DjangoZipkinSection
+
+
+class MySchema(...):
+   ...
+   class zipkin(DjangoZipkinSection):
+       pass
+```
 
 ## Hacking
 
 TBD: branch, PR
+TBD: testing
 
 ### Implementation details
 TBD: thread local store
