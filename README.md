@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/prezi/django-zipkin.svg?branch=master)](https://travis-ci.org/prezi/django-zipkin)
 
-*django-zipkin* is a middleware and an api for recording and sending messages to [Zipkin](https://github.com/twitter/zipkin).
+*django-zipkin* is a middleware and api for recording and sending messages to [Zipkin](http://twitter.github.io/zipkin/). Why use it? From the http://twitter.github.io/zipkin/:
+
+"Collecting traces helps developers gain deeper knowledge about how certain requests perform in a distributed system. Let's say we're having problems with user requests timing out. We can look up traced requests that timed out and display it in the web UI. We'll be able to quickly find the service responsible for adding the unexpected response time. If the service has been annotated adequately we can also find out where in that service the issue is happening."
 
 ## Supported versions
 
