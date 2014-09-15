@@ -161,5 +161,6 @@ cd django-zipkin
 git remote rename origin upstream
 virtualenv virtualenv
 . virtualenv/bin/activate
+pip install django
 python setup.py test
 ```
