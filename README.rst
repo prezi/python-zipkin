@@ -23,11 +23,6 @@ support Python 3)
 
 **Django**: ``1.3`` - ``1.7``
 
-Supported versions:
-
--  python: 2.6, 2.7 (the current Python Thrift release doesn't support
-   Python 3)
--  Django: 1.3 - 1.7
 
 Getting started
 ---------------
@@ -38,7 +33,7 @@ TBD: release to PyPI, tag release, update this
 
 ::
 
-    pip install https://github.com/prezi/django-zipkin.git
+    pip install django-zipkin
 
 Add the middleware to the list of installed middlewares:
 
