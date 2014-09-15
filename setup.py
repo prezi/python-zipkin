@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='django-zipkin',
     version=__version__,
-    description='django-zipkin is Django application implementing ',
+    description='django-zipkin is a Django middleware and api for recording and sending messages to Zipkin',
     author='Zoltan Nagy, Zsolt Dollenstein',
     author_email='zoltan.nagy@prezi.com, zsolt.dollenstein@prezi.com',
     url='https://github.com/prezi/django-zipkin',
