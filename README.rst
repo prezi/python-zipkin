@@ -29,8 +29,6 @@ Getting started
 
 Install the library:
 
-TBD: release to PyPI, tag release, update this
-
 ::
 
     pip install django-zipkin
