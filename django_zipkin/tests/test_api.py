@@ -155,6 +155,7 @@ class ZipkinApiTestCase(TestCase):
         self.assertEqual(self.api._build_span().binary_annotations[0].value, uri_out)
 
     def test_integration(self):
+        self.api.endpoint.ipv4 = 2130706433
         binary_annotations = [self.api._build_binary_annotation('awesome', True)]
         annotations = [
             self.api._build_annotation('sr'),
@@ -170,5 +171,5 @@ class ZipkinApiTestCase(TestCase):
         )
         self.store.get_rpc_name.return_value = 'test-name'
         self.mock_time.time.return_value = 1024
-        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMIAAEKAAAdAAAKAAEAAAAAAAAAAQsAAgAAAAJzcwwAAwgAAQoAAB0AAA8ACAwAAAABCwABAAAAB2F3ZXNvbWULAAIAAAABMQgAAwAAAAAMAAQIAAEKAAAdAAACAAkAAA==')
-        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMIAAEKAAAdAAAKAAEAAAAAAAAAAQsAAgAAAAJzcwwAAwgAAQoAAB0AAA8ACAwAAAABCwABAAAAB2F3ZXNvbWULAAIAAAABMQgAAwAAAAAMAAQIAAEKAAAdAAACAAkAAA==')
+        self.assertEqual(self.api.build_log_message(), self.api.build_log_message())
+        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMIAAF/AAABAAAKAAEAAAAAAAAAAQsAAgAAAAJzcwwAAwgAAX8AAAEAAA8ACAwAAAABCwABAAAAB2F3ZXNvbWULAAIAAAABMQgAAwAAAAAMAAQIAAF/AAABAAACAAkAAA==')
