@@ -234,6 +234,7 @@ You can start hacking on ``django-zipkin`` with:
     git remote rename origin upstream
     virtualenv virtualenv
     . virtualenv/bin/activate
+    pip install django
     python setup.py test
 
 .. |Build Status| image:: https://travis-ci.org/prezi/django-zipkin.svg?branch=master
