@@ -4,7 +4,7 @@ django-zipkin
 |Build Status|
 
 *django-zipkin* is a middleware and api for recording and sending
-messages to `Zipkin <http://twitter.github.io/zipkin/>`__. Why use it?
+messages to `Zipkin <http://twitter.github.io/zipkin/>`_. Why use it?
 From the http://twitter.github.io/zipkin/:
 
 "Collecting traces helps developers gain deeper knowledge about how
@@ -62,7 +62,7 @@ Getting the data to Zipkin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 From here you it's up to you to get the messages to Zipkin. Here's how
-we do it at `Prezi <https://prezi.com>`__:
+we do it at `Prezi <https://prezi.com>`_:
 
 -  We configure logging in each service using ``django-zipkin`` to send
    log messages from the ``zipkin`` logger to the locally running Scribe
@@ -98,7 +98,7 @@ be passed on with inter-service calls. ``django-zipkin`` provides
 facilities for this on both the client and the server side. The
 middleware automatically reads the trace propagation HTTP headers
 described `in the Zipkin
-documentation <https://github.com/twitter/zipkin/blob/master/doc/collector-api.md#traceid-propagation>`__.
+documentation <https://github.com/twitter/zipkin/blob/master/doc/collector-api.md#traceid-propagation>`_.
 For propagating data to outgoing requests, a function returning a dict
 of the correct HTTP headers is provided:
 
@@ -174,7 +174,7 @@ Zipkin UI vs. JSON annotation values
 The ``django.view.kwargs`` annotation has a JSON string as its value for
 easier automated processing. Unfortunately this make the UI display the
 value as ``[object Object]``. See `Zipkin issue
-#410 <https://github.com/twitter/zipkin/issues/410>`__ for any progress
+#410 <https://github.com/twitter/zipkin/issues/410>`_ for any progress
 on this. If you want to find the value on the web UI, you can open the
 page source and search for ``django.view.kwargs``.
 
@@ -229,7 +229,7 @@ Hacking
 -------
 
 See
-`CONTRIBUTING.md <https://github.com/prezi/django-zipkin/blob/master/CONTRIBUTING.md>`__
+`CONTRIBUTING.md <https://github.com/prezi/django-zipkin/blob/master/CONTRIBUTING.md>`_
 for guidelines.
 
 You can start hacking on ``django-zipkin`` with:
