@@ -1,8 +1,14 @@
 # django-zipkin
 
-TBD: Travis CI banner once the repo is opened and Travis CI integration is a go
+[![Build Status](https://travis-ci.org/prezi/django-zipkin.svg?branch=master)](https://travis-ci.org/prezi/django-zipkin)
 
 *django-zipkin* is a middleware and an api for recording and sending messages to [Zipkin](https://github.com/twitter/zipkin).
+
+## Supported versions
+
+**Python**: `2.6`, `2.7` (the current Python Thrift release doesn't support Python 3)
+
+**Django**: `1.3` - `1.7`
 
 ## Getting started
 
