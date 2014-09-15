@@ -39,7 +39,7 @@ matrix:
 
 install:
   - pip install -q $DJANGO_VERSION
-  - pip install . --use-mirrors
+  - pip install . pep8 pyflakes --use-mirrors
 
 script:
   - pep8 --max-line-length=140 django_zipkin/*.py
