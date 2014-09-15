@@ -12,6 +12,11 @@
 
 **Django**: `1.3` - `1.7`
 
+Supported versions:
+
+ - python: 2.6, 2.7 (the current Python Thrift release doesn't support Python 3)
+ - Django: 1.3 - 1.7
+
 ## Getting started
 
 Install the library:
