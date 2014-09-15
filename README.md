@@ -62,8 +62,8 @@ propagation HTTP headers described [in the Zipkin documentation](https://github.
 For propagating data to outgoing requests, a function returning a dict of the correct HTTP headers is provided:
 
 ```python
-from django_zipkin.api import api
-headers = api.get_headers_for_downstream_request()
+from django_zipkin.api import api as zipkin_api
+headers = zipkin_api.get_headers_for_downstream_request()
 
 # During a request returns something like this:
 {'X-B3-Sampled': 'false', 'X-B3-TraceId': 'b059fb34103a46f7', 'X-B3-Flags': '0', 'X-B3-SpanId': 'a42f4f3a045c54a5'}
