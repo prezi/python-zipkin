@@ -48,10 +48,10 @@ Another alternative may be logging to syslog, and using `scribe_apache` shipped 
 You can also add your own annotations from anywhere in your code:
 
 ```python
-from django_zipkin.api import api
+from django_zipkin.api import api as zipkin_api
 
-api.record_event('MySQL: "SELECT * FROM auth_users"', duration=15000)  # Note duration is in microseconds, as defined by Zipkin
-api.record_key_value('Cache misses', 15)  # You can use string, int, long and bool values
+zipkin_api.record_event('MySQL: "SELECT * FROM auth_users"', duration=15000)  # Note duration is in microseconds, as defined by Zipkin
+zipkin_api.record_key_value('Cache misses', 15)  # You can use string, int, long and bool values
 ```
 
 ### Propagating tracing information
@@ -161,6 +161,5 @@ cd django-zipkin
 git remote rename origin upstream
 virtualenv virtualenv
 . virtualenv/bin/activate
-pip install django
 python setup.py test
 ```
