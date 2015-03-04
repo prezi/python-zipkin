@@ -1,5 +1,5 @@
 from django_zipkin import __version__
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name='django-zipkin',
@@ -8,7 +8,7 @@ setup(
     author='Zoltan Nagy, Zsolt Dollenstein',
     author_email='zoltan.nagy@prezi.com, zsolt.dollenstein@prezi.com',
     url='https://github.com/prezi/django-zipkin',
-    packages=['django_zipkin'],
+    packages=find_packages(),
     license='WTFPL License',
     keywords='django zipkin middleware',
     platforms=['any'],
