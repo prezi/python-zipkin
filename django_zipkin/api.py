@@ -129,7 +129,7 @@ class ZipkinApi(object):
     @staticmethod
     def _ipv4_to_long(ip):
         packed_ip = socket.inet_aton(ip)
-        return struct.unpack("!L", packed_ip)[0]
+        return struct.unpack("!i", packed_ip)[0]
 
 
 api = ZipkinApi(default_store)
