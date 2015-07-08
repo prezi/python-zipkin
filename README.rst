@@ -24,8 +24,24 @@ support Python 3)
 **Django**: ``1.3`` - ``1.7``
 
 
-Getting started
----------------
+Getting started (demo)
+----------------------
+
+There is a sample django app in the ``example`` folder set up to use
+this middleware. If you want to see a working demo, we have provided
+docker images so you can try it locally; make sure you have
+`docker-compose <https://docs.docker.com/compose/>`_ set up, and then:
+
+::
+   cd example
+   docker-compose up
+   curl -v localhost:8000 -H 'X-B3-Flags: 1'
+
+Opening http://localhost:8080 should bring up the zipkin web interface
+where you should be able to see your request trace.
+
+How to add it to my service?
+----------------------------
 
 Install the library:
 
@@ -64,6 +80,8 @@ we do it at `Prezi <https://prezi.com>`_:
    category directly to the Zipkin collector. This is useful because
    Scribe buffers messages in case the collector (or the network to it)
    is down.
+
+You can see an example for this in the ``example`` folder.
 
 Another alternative may be logging to syslog, and using
 ``scribe_apache`` shipped with Scribe to send data to Zipkin (possibly
