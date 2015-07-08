@@ -33,6 +33,7 @@ docker images so you can try it locally; make sure you have
 `docker-compose <https://docs.docker.com/compose/>`_ set up, and then:
 
 ::
+
    cd example
    docker-compose up
    curl -v localhost:8000 -H 'X-B3-Flags: 1'
