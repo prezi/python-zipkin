@@ -1,7 +1,7 @@
 from zipkin.zipkin_data import ZipkinId
 
 
-class DjangoZipkinTestHelpers(object):
+class ZipkinTestHelpers(object):
     def assertZipkinDataEquals(self, a, b, msg=None):
         for field in ['sampled', 'flags']:
             self.assertEqual(getattr(a, field), getattr(b, field), msg)

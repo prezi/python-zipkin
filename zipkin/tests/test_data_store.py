@@ -5,7 +5,7 @@ from zipkin.data_store import BaseDataStore, ThreadLocalDataStore
 from zipkin.zipkin_data import ZipkinData
 from zipkin._thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
 
-from helpers import DjangoZipkinTestHelpers
+from helpers import ZipkinTestHelpers
 
 
 __all__ = ['BaseDataStoreTestCase', 'ThreadLocalDataStoreTestCase']
@@ -35,7 +35,7 @@ class BaseDataStoreTestCase(TestCase):
         self.store._record_binary_annotation.assert_called_once_with(binary_annotation)
 
 
-class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
+class ThreadLocalDataStoreTestCase(ZipkinTestHelpers, TestCase):
     def setUp(self):
         self.local_patcher = patch('zipkin.data_store.ThreadLocalDataStore.thread_local_data')
         self.mock_local = self.local_patcher.start()
