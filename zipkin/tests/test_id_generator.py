@@ -1,7 +1,7 @@
 from unittest2.case import TestCase
 
-from django_zipkin.zipkin_data import ZipkinId
-from django_zipkin.id_generator import SimpleIdGenerator
+from zipkin.zipkin_data import ZipkinId
+from zipkin.id_generator import SimpleIdGenerator
 
 
 __all__ = ['SimpleIdGeneratorTestCase']

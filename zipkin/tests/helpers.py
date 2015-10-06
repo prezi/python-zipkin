@@ -1,4 +1,4 @@
-from django_zipkin.zipkin_data import ZipkinId
+from zipkin.zipkin_data import ZipkinId
 
 
 class DjangoZipkinTestHelpers(object):

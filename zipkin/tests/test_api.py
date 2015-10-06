@@ -1,11 +1,11 @@
 from unittest2 import TestCase
 from mock import patch, Mock, sentinel
 
-from django_zipkin._thrift.zipkinCore.ttypes import AnnotationType
-from django_zipkin.api import ZipkinApi
-from django_zipkin.data_store import BaseDataStore
-from django_zipkin.id_generator import SimpleIdGenerator
-from django_zipkin.zipkin_data import ZipkinData, ZipkinId
+from zipkin._thrift.zipkinCore.ttypes import AnnotationType
+from zipkin.api import ZipkinApi
+from zipkin.data_store import BaseDataStore
+from zipkin.id_generator import SimpleIdGenerator
+from zipkin.zipkin_data import ZipkinData, ZipkinId
 
 
 __all__ = ['ZipkinApiTestCase']
@@ -13,10 +13,10 @@ __all__ = ['ZipkinApiTestCase']
 
 class ZipkinApiTestCase(TestCase):
     def setUp(self):
-        self.time_patcher = patch('django_zipkin.api.time')
+        self.time_patcher = patch('zipkin.api.time')
         self.mock_time = self.time_patcher.start()
         self.store = Mock(spec=BaseDataStore)
-        self.api = ZipkinApi(self.store)
+        self.api = ZipkinApi(store=self.store)
 
     def tearDown(self):
         self.time_patcher.stop()
@@ -99,45 +99,6 @@ class ZipkinApiTestCase(TestCase):
         self.assertEqual(span.annotations, annotations)
         self.assertEqual(span.binary_annotations, binary_annotations)
 
-    def test_downstream_request_headers_with_parent_span_id(self):
-        generator = SimpleIdGenerator()
-        self.store.get.return_value = data = ZipkinData(
-            trace_id=generator.generate_trace_id(),
-            span_id=generator.generate_span_id(),
-            parent_span_id=generator.generate_span_id(),
-            sampled=True,
-            flags=True
-        )
-        self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
-            'X-B3-TraceId': data.trace_id.get_hex(),
-            'X-B3-SpanId': data.span_id.get_hex(),
-            'X-B3-ParentSpanId': data.parent_span_id.get_hex(),
-            'X-B3-Sampled': 'true',
-            'X-B3-Flags': '1'
-        })
-
-    def test_downstream_request_headers_without_parent_span_id(self):
-        generator = SimpleIdGenerator()
-        self.store.get.return_value = data = ZipkinData(
-            trace_id=generator.generate_trace_id(),
-            span_id=generator.generate_span_id(),
-            sampled=True,
-            flags=0
-        )
-        self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
-            'X-B3-TraceId': data.trace_id.get_hex(),
-            'X-B3-SpanId': data.span_id.get_hex(),
-            'X-B3-Sampled': 'true',
-            'X-B3-Flags': '0'
-        })
-
-    def test_downstream_request_headers_with_empty_data(self):
-        self.store.get.return_value = ZipkinData()
-        self.assertDictEqual(self.api.get_headers_for_downstream_request(), {
-            'X-B3-Sampled': 'false',
-            'X-B3-Flags': '0'
-        })
-
     def test_nonascii_input(self):
         uri_in = u'\ufffd\ufffd/\x01'
         uri_out = uri_in.encode('utf-8')
@@ -160,7 +121,7 @@ class ZipkinApiTestCase(TestCase):
         annotations = [
             self.api._build_annotation('sr'),
             self.api._build_annotation('ss'),
-            ]
+        ]
         self.store.get_annotations.return_value = annotations
         self.store.get_binary_annotations.return_value = binary_annotations
         self.store.get.return_value = ZipkinData(
@@ -172,4 +133,8 @@ class ZipkinApiTestCase(TestCase):
         self.store.get_rpc_name.return_value = 'test-name'
         self.mock_time.time.return_value = 1024
         self.assertEqual(self.api.build_log_message(), self.api.build_log_message())
-        self.assertEqual(self.api.build_log_message(), 'CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8ABgwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMIAAF/AAABAAAKAAEAAAAAAAAAAQsAAgAAAAJzcwwAAwgAAX8AAAEAAA8ACAwAAAABCwABAAAAB2F3ZXNvbWULAAIAAAABMQgAAwAAAAAMAAQIAAF/AAABAAACAAkAAA==')
+        self.assertEqual(
+            self.api.build_log_message(),
+            '''CgABAAAAAAAAACoLAAMAAAAJdGVzdC1uYW1lCgAEAAAAAAAAEJIKAAUAAAAAAAAG7Q8AB'''
+            '''gwAAAACCgABAAAAAAAAAAELAAIAAAACc3IMAAMIAAF/AAABAAAKAAEAAAAAAAAAAQsAAgAAAAJzcwwAAwgAAX8AAAEAAA8ACAwAAAABCwABAAAAB'''
+            '''2F3ZXNvbWULAAIAAAABMQgAAwAAAAAMAAQIAAF/AAABAAACAAkAAA==''')

@@ -1,21 +1,20 @@
-from django_zipkin import __version__
+from zipkin import __version__
 from setuptools import find_packages, setup
 
 setup(
-    name='django-zipkin',
+    name='zipkin',
     version=__version__,
-    description='django-zipkin is a Django middleware and api for recording and sending messages to Zipkin',
+    description='python api for sending data to Zipkin',
     author='Zoltan Nagy, Zsolt Dollenstein',
     author_email='zoltan.nagy@prezi.com, zsolt.dollenstein@prezi.com',
-    url='https://github.com/prezi/django-zipkin',
+    url='https://github.com/prezi/python-zipkin',
     packages=find_packages(),
-    license='WTFPL License',
-    keywords='django zipkin middleware',
+    license='Apache2',
+    keywords='zipkin python',
     platforms=['any'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
-        'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: Freely Distributable',
         'Operating System :: OS Independent',
@@ -27,9 +26,6 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=['thrift >= 0.9.1'],
-    tests_require=['mock >= 1.0', 'unittest2 >= 0.5.1'],
-    extras_require={
-        'configglue_support': ['configglue']
-    },
-    test_suite='tests.main',
+    tests_require=['mock >= 1.0', 'unittest2 >= 0.5.1', 'pep8 >= 1.6.2'],
+    test_suite='zipkin.tests',
 )

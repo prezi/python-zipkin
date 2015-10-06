@@ -1,9 +1,9 @@
 from unittest2.case import TestCase
 from mock import patch, Mock, sentinel
 
-from django_zipkin.data_store import BaseDataStore, ThreadLocalDataStore
-from django_zipkin.zipkin_data import ZipkinData
-from django_zipkin._thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
+from zipkin.data_store import BaseDataStore, ThreadLocalDataStore
+from zipkin.zipkin_data import ZipkinData
+from zipkin._thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
 
 from helpers import DjangoZipkinTestHelpers
 
@@ -37,7 +37,7 @@ class BaseDataStoreTestCase(TestCase):
 
 class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
     def setUp(self):
-        self.local_patcher = patch('django_zipkin.data_store.ThreadLocalDataStore.thread_local_data')
+        self.local_patcher = patch('zipkin.data_store.ThreadLocalDataStore.thread_local_data')
         self.mock_local = self.local_patcher.start()
 
     def tearDown(self):
@@ -96,5 +96,3 @@ class ThreadLocalDataStoreTestCase(DjangoZipkinTestHelpers, TestCase):
         ThreadLocalDataStore.thread_local_data = object()
         self.assertIsNone(store.get_rpc_name())
         self.assertZipkinDataEquals(ZipkinData(), store.get())
-
-

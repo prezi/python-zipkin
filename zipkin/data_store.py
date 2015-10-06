@@ -1,8 +1,6 @@
 import threading
 import functools
 
-from utils import import_class
-import defaults as settings
 from zipkin_data import ZipkinData
 from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
 
@@ -101,4 +99,4 @@ class ThreadLocalDataStore(BaseDataStore):
         cls.thread_local_data.rpc_name = None
 
 
-default = import_class(settings.ZIPKIN_DATA_STORE_CLASS)()
+default = ThreadLocalDataStore()

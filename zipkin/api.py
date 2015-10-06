@@ -7,19 +7,17 @@ import logging
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
 
-import constants
-import defaults as settings
 from data_store import default as default_store
 from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation, Endpoint, AnnotationType, Span
 
 
 class ZipkinApi(object):
-    def __init__(self, store=None, service_name=None):
+    def __init__(self, service_name=None, store=None):
         self.store = store or default_store
         self.endpoint = Endpoint(
             ipv4=self._get_my_ip(),
             port=None,
-            service_name=service_name or settings.ZIPKIN_SERVICE_NAME
+            service_name=service_name
         )
 
     def record_event(self, message, duration=None):
@@ -36,35 +34,6 @@ class ZipkinApi(object):
         protocol = TBinaryProtocol.TBinaryProtocolAccelerated(trans=trans)
         self._build_span().write(protocol)
         return base64.b64encode(trans.getvalue())
-
-    def get_headers_for_downstream_request(self):
-        try:
-            data = self.store.get()
-            headers = {
-                constants.TRACE_ID_HDR_NAME: data.trace_id.get_hex() if data.trace_id is not None else None,
-                constants.SPAN_ID_HDR_NAME: data.span_id.get_hex() if data.span_id is not None else None,
-                constants.SAMPLED_HDR_NAME: self._bool_to_str_true_false(data.sampled),
-                constants.FLAGS_HDR_NAME: self._bool_to_str_1_0(data.flags)
-            }
-            if data.parent_span_id is not None:
-                headers[constants.PARENT_SPAN_ID_HDR_NAME] = data.parent_span_id.get_hex()
-            for key in headers.keys():
-                if headers[key] is None:
-                    del headers[key]
-            return headers
-        except Exception:
-            logging.root.exception("failed_to_build_downstream_request_headers")
-            return {}
-
-    def _bool_to_str_true_false(self, b):
-        if b:
-            return 'true'
-        return 'false'
-
-    def _bool_to_str_1_0(self, b):
-        if b:
-            return '1'
-        return '0'
 
     def _get_my_ip(self):
         try:
