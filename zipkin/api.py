@@ -2,7 +2,6 @@ import struct
 import socket
 import time
 import base64
-import logging
 
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
