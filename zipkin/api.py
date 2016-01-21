@@ -11,13 +11,14 @@ from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation, Endpoint, An
 
 
 class ZipkinApi(object):
-    def __init__(self, service_name=None, store=None):
+    def __init__(self, service_name=None, store=None, writer=None):
         self.store = store or default_store
         self.endpoint = Endpoint(
             ipv4=self._get_my_ip(),
             port=None,
             service_name=service_name
         )
+        self.writer = writer
 
     def record_event(self, message, duration=None):
         self.store.record(self._build_annotation(message, duration))
@@ -28,11 +29,8 @@ class ZipkinApi(object):
     def set_rpc_name(self, name):
         self.store.set_rpc_name(name)
 
-    def build_log_message(self):
-        trans = TTransport.TMemoryBuffer()
-        protocol = TBinaryProtocol.TBinaryProtocolAccelerated(trans=trans)
-        self._build_span().write(protocol)
-        return base64.b64encode(trans.getvalue())
+    def submit_span(self):
+        self.writer.write(self._build_span())
 
     def _get_my_ip(self):
         try:
