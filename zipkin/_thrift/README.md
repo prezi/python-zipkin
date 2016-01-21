@@ -1,1 +1,5 @@
-Generated from https://github.com/twitter/zipkin/tree/2926ee00c35a3c383eaad378c177c31253c85f1c/zipkin-thrift/src/main/resources/thrift
+Generated from https://github.com/openzipkin/zipkin/find/master
+
+* zipkin-receiver-scribe/src/main/thrift/com/twitter/zipkin/scribe.thrift
+* zipkin-thrift/src/main/thrift/com/twitter/zipkin/zipkinCore.thrift
+* zipkin-thrift/src/main/thrift/com/twitter/zipkin/zipkinDependencies.thrift
