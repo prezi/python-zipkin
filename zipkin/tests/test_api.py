@@ -1,4 +1,4 @@
-from unittest2 import TestCase
+from unittest2 import TestCase, skip
 from mock import patch, Mock, sentinel
 
 from zipkin._thrift.zipkinCore.ttypes import AnnotationType
@@ -25,18 +25,17 @@ class ZipkinApiTestCase(TestCase):
         self.assertEqual(self.api._ipv4_to_long('127.0.0.1'), 2130706433)
 
     def test_build_annotation(self):
-        value, duration = Mock(), Mock()
-        annotation = self.api._build_annotation(value, duration)
+        value = Mock()
+        annotation = self.api._build_annotation(value)
         self.assertEqual(annotation.timestamp, self.mock_time.time.return_value * 1000 * 1000)
         self.assertEqual(annotation.value, str(value))
-        self.assertEqual(annotation.duration, duration)
         self.assertEqual(annotation.host, self.api.endpoint)
 
     def test_record_event(self):
         with patch.object(self.api, '_build_annotation') as mock_build_annotation:
-            value, duration = Mock(), Mock()
-            self.api.record_event(value, duration)
-            mock_build_annotation.assert_called_once_with(value, duration)
+            value = Mock()
+            self.api.record_event(value)
+            mock_build_annotation.assert_called_once_with(value)
             self.store.record.assert_called_once_with(mock_build_annotation.return_value)
 
     def test_binary_annotation_type(self):
@@ -84,6 +83,7 @@ class ZipkinApiTestCase(TestCase):
         self.store.set_rpc_name.assert_called_once_with(sentinel.rpc_name)
 
     def test_build_span(self):
+        timestamp, duration = Mock(), Mock()
         binary_annotations = [self.api._build_binary_annotation('awesome', True)]
         annotations = [
             self.api._build_annotation('sr'),
@@ -91,15 +91,18 @@ class ZipkinApiTestCase(TestCase):
         ]
         self.store.get_annotations.return_value = annotations
         self.store.get_binary_annotations.return_value = binary_annotations
-        span = self.api._build_span()
+        span = self.api._build_span(timestamp, duration)
         self.assertEqual(span.id, self.store.get.return_value.span_id.get_binary.return_value)
         self.assertEqual(span.trace_id, self.store.get.return_value.trace_id.get_binary.return_value)
         self.assertEqual(span.parent_id, self.store.get.return_value.parent_span_id.get_binary.return_value)
         self.assertEqual(span.name, self.store.get_rpc_name.return_value)
         self.assertEqual(span.annotations, annotations)
         self.assertEqual(span.binary_annotations, binary_annotations)
+        self.assertEqual(span.timestamp, timestamp)
+        self.assertEqual(span.duration, duration)
 
     def test_nonascii_input(self):
+        timestamp, duration = Mock(), Mock()
         uri_in = u'\ufffd\ufffd/\x01'
         uri_out = uri_in.encode('utf-8')
         self.store.get.return_value = ZipkinData(
@@ -111,10 +114,10 @@ class ZipkinApiTestCase(TestCase):
         self.store.get_binary_annotations.return_value = [self.api._build_binary_annotation('http.uri', uri_in)]
         self.store.get_annotations.return_value = [self.api._build_annotation(uri_in)]
         self.store.get_rpc_name.return_value = 'test-rpc-name'
-        self.api.build_log_message()  # Assert no exception is raised
-        self.assertEqual(self.api._build_span().annotations[0].value, uri_out)
-        self.assertEqual(self.api._build_span().binary_annotations[0].value, uri_out)
+        self.assertEqual(self.api._build_span(timestamp, duration).annotations[0].value, uri_out)
+        self.assertEqual(self.api._build_span(timestamp, duration).binary_annotations[0].value, uri_out)
 
+    @skip("To be migrated into test for ScribeWriter")
     def test_integration(self):
         self.api.endpoint.ipv4 = 2130706433
         binary_annotations = [self.api._build_binary_annotation('awesome', True)]
