@@ -20,8 +20,8 @@ class ZipkinApi(object):
         )
         self.writer = writer
 
-    def record_event(self, message, duration=None):
-        self.store.record(self._build_annotation(message, duration))
+    def record_event(self, message):
+        self.store.record(self._build_annotation(message))
 
     def record_key_value(self, key, value):
         self.store.record(self._build_binary_annotation(key, value))
@@ -29,8 +29,9 @@ class ZipkinApi(object):
     def set_rpc_name(self, name):
         self.store.set_rpc_name(name)
 
-    def submit_span(self):
-        self.writer.write(self._build_span())
+    def submit_span(self, timestamp_in_microseconds, duration_in_microseconds):
+        self.writer.write(self._build_span(timestamp_in_microseconds, duration_in_microseconds))
+        self.store.clear()
 
     def _get_my_ip(self):
         try:
@@ -38,7 +39,7 @@ class ZipkinApi(object):
         except Exception:
             return None
 
-    def _build_span(self):
+    def _build_span(self, timestamp_in_microseconds, duration_in_microseconds):
         zipkin_data = self.store.get()
         return Span(
             id=zipkin_data.span_id.get_binary(),
@@ -46,13 +47,15 @@ class ZipkinApi(object):
             parent_id=zipkin_data.parent_span_id.get_binary() if zipkin_data.parent_span_id is not None else None,
             name=self.store.get_rpc_name(),
             annotations=self.store.get_annotations(),
-            binary_annotations=self.store.get_binary_annotations()
+            binary_annotations=self.store.get_binary_annotations(),
+            timestamp=timestamp_in_microseconds,
+            duration=duration_in_microseconds
         )
 
-    def _build_annotation(self, value, duration=None):
+    def _build_annotation(self, value):
         if isinstance(value, unicode):
             value = value.encode('utf-8')
-        return Annotation(time.time() * 1000 * 1000, str(value), self.endpoint, duration)
+        return Annotation(time.time() * 1000 * 1000, str(value), self.endpoint)
 
     def _build_binary_annotation(self, key, value):
         annotation_type = self._binary_annotation_type(value)
