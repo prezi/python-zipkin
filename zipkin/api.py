@@ -100,4 +100,4 @@ class ZipkinApi(object):
         return struct.unpack("!i", packed_ip)[0]
 
 
-api = ZipkinApi(default_store)
+api = ZipkinApi(store=default_store)
