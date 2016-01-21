@@ -1,10 +1,6 @@
 import struct
 import socket
 import time
-import base64
-
-from thrift.protocol import TBinaryProtocol
-from thrift.transport import TTransport
 
 from data_store import default as default_store
 from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation, Endpoint, AnnotationType, Span
