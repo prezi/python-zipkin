@@ -13,13 +13,19 @@ class ScribeWriter(object):
         self.client = Scribe.Client(iprot=protocol, oprot=protocol)
         self.category = category
 
-    def write(self, span):
+    def __span_to_entry(span):
         data = self.__build_log_message(span)
         message = "\\n".join([r for r in data.split("\n") if r != ""]) + "\n"
+        return Scribe.LogEntry(category=self.category, message=message)
+
+    def write_multiple(self, spans):
+        entries = [self.__span_to_entry(span) for span in spans]
         self.transport.open()
-        entry = Scribe.LogEntry(category=self.category, message=message)
-        self.client.Log([entry])
+        self.client.Log(entries)
         self.transport.close()
+
+    def write(self, span):
+        self.write_multiple([span])
 
     def __build_log_message(self, span):
         trans = TTransport.TMemoryBuffer()
