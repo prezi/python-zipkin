@@ -13,7 +13,7 @@ class ScribeWriter(object):
         self.client = Scribe.Client(iprot=protocol, oprot=protocol)
         self.category = category
 
-    def __span_to_entry(span):
+    def __span_to_entry(self, span):
         data = self.__build_log_message(span)
         message = "\\n".join([r for r in data.split("\n") if r != ""]) + "\n"
         return Scribe.LogEntry(category=self.category, message=message)
