@@ -24,7 +24,7 @@ class ZipkinId(object):
         return self.n
 
     def get_hex(self):
-        return binascii.hexlify(self.STRUCT.pack(self.n))
+        return binascii.hexlify(self.STRUCT.pack(self.n)).decode('utf-8')
 
     @classmethod
     def from_binary(cls, n):

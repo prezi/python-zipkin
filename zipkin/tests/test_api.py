@@ -28,7 +28,7 @@ class ZipkinApiTestCase(TestCase):
         value = Mock()
         annotation = self.api._build_annotation(value)
         self.assertEqual(annotation.timestamp, self.mock_time.time.return_value * 1000 * 1000)
-        self.assertEqual(annotation.value, str(value))
+        self.assertEqual(annotation.value, value.encode('utf-8'))
         self.assertEqual(annotation.host, self.api.endpoint)
 
     def test_record_event(self):
@@ -49,18 +49,18 @@ class ZipkinApiTestCase(TestCase):
             2**33: AnnotationType.I64,  # TODO: make type detection more granular
             3.14: AnnotationType.DOUBLE
         }
-        for value, expected_type in cases.iteritems():
+        for value, expected_type in cases.items():
             self.assertEqual(self.api._binary_annotation_type(value), expected_type, value)
 
     def test_format_binary_annotation_value(self):
         cases = {
-            AnnotationType.STRING: [('foo', 'foo'), (u'foo', 'foo')],
+            AnnotationType.STRING: [(b'foo', b'foo'), (u'foo', b'foo')],
             # TODO: add cases for smaller ints when type detection is made more granular
             AnnotationType.BOOL: [(True, '1'), (False, '0')],
-            AnnotationType.I64: [(-42, '\xff\xff\xff\xff\xff\xff\xff\xd6'), (42, '\x00\x00\x00\x00\x00\x00\x00*')],
-            AnnotationType.DOUBLE: [(3.14, '@\t\x1e\xb8Q\xeb\x85\x1f')]
+            AnnotationType.I64: [(-42, b'\xff\xff\xff\xff\xff\xff\xff\xd6'), (42, b'\x00\x00\x00\x00\x00\x00\x00*')],
+            AnnotationType.DOUBLE: [(3.14, b'@\t\x1e\xb8Q\xeb\x85\x1f')]
         }
-        for type, pairs in cases.iteritems():
+        for type, pairs in cases.items():
             for input, expected in pairs:
                 self.assertEqual(self.api._format_binary_annotation_value(input, type), expected, input)
 
