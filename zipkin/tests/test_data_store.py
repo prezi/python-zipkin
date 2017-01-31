@@ -5,7 +5,7 @@ from zipkin.data_store import BaseDataStore, ThreadLocalDataStore
 from zipkin.zipkin_data import ZipkinData
 from zipkin._thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
 
-from helpers import ZipkinTestHelpers
+from zipkin.tests.helpers import ZipkinTestHelpers
 
 
 __all__ = ['BaseDataStoreTestCase', 'ThreadLocalDataStoreTestCase']

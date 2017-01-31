@@ -1,8 +1,8 @@
 import threading
 import functools
 
-from zipkin_data import ZipkinData
-from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
+from zipkin.zipkin_data import ZipkinData
+from zipkin._thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
 
 
 class BaseDataStore(object):

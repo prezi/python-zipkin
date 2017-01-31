@@ -2,8 +2,8 @@ import struct
 import socket
 import time
 
-from data_store import default as default_store
-from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation, Endpoint, AnnotationType, Span
+from zipkin.data_store import default as default_store
+from zipkin._thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation, Endpoint, AnnotationType, Span
 
 
 class ZipkinApi(object):
@@ -49,9 +49,11 @@ class ZipkinApi(object):
         )
 
     def _build_annotation(self, value):
-        if isinstance(value, unicode):
+        # if isinstance(value, unicode):
+            # value = value.encode('utf-8')
+        if not isinstance(value, bytes):
             value = value.encode('utf-8')
-        return Annotation(time.time() * 1000 * 1000, str(value), self.endpoint)
+        return Annotation(time.time() * 1000 * 1000, value, self.endpoint)
 
     def _build_binary_annotation(self, key, value):
         annotation_type = self._binary_annotation_type(value)
@@ -60,7 +62,8 @@ class ZipkinApi(object):
 
     @classmethod
     def _binary_annotation_type(cls, value):
-        if isinstance(value, str) or isinstance(value, unicode):
+        # if isinstance(value, str) or isinstance(value, unicode)
+        if isinstance(value, str):
             return AnnotationType.STRING
         if isinstance(value, float):
             return AnnotationType.DOUBLE
@@ -79,9 +82,13 @@ class ZipkinApi(object):
             AnnotationType.DOUBLE: 'd'
         }
         if type == AnnotationType.STRING:
-            if isinstance(value, unicode):
-                return value.encode('utf-8')
-            return str(value)
+            # if isinstance(value, unicode):
+                # return value.encode('utf-8')
+            # return str(value)
+            if isinstance(value, bytes):
+                return value
+            return value.encode('utf-8')
+
         if type == AnnotationType.BOOL:
             if value:
                 return '1'
