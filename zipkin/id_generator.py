@@ -1,6 +1,6 @@
 import random
 
-from zipkin_data import ZipkinId
+from .zipkin_data import ZipkinId
 
 
 class BaseIdGenerator(object):

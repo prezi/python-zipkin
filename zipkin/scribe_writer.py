@@ -1,34 +1,46 @@
 import base64
-from thrift.protocol import TBinaryProtocol
-from thrift.transport import TSocket, TTransport
-from zipkin._thrift.scribe import Scribe
+
+from thriftpy.protocol import TBinaryProtocol
+from thriftpy.protocol import TBinaryProtocolFactory
+from thriftpy.transport import TFramedTransportFactory
+from thriftpy.transport import TMemoryBuffer
+from thriftpy.rpc import make_client
+
+from .thrift.scribe import scribe_thrift
+
+
+def _build_log_message(span):
+    trans = TMemoryBuffer()
+    protocol = TBinaryProtocol(trans=trans)
+    span.write(protocol)
+    return base64.b64encode(trans.getvalue())
 
 
 class ScribeWriter(object):
     def __init__(self, host, port,  category='zipkin'):
-        socket = TSocket.TSocket(host=host, port=port)
-        self.transport = TTransport.TFramedTransport(socket)
-        protocol = TBinaryProtocol.TBinaryProtocol(
-            trans=self.transport, strictRead=False, strictWrite=False)
-        self.client = Scribe.Client(iprot=protocol, oprot=protocol)
         self.category = category
+        self.host = host
+        self.port = port
+        self.protocol_factory = TBinaryProtocolFactory(strict_read=False, strict_write=False)
+        self.transport_factory = TFramedTransportFactory()
 
     def __span_to_entry(self, span):
-        data = self.__build_log_message(span)
-        message = "\\n".join([r for r in data.split("\n") if r != ""]) + "\n"
-        return Scribe.LogEntry(category=self.category, message=message)
+        data = _build_log_message(span)
+        message = b"\\n".join([r for r in data.split(b"\n") if r != b""]) + b"\n"
+        return scribe_thrift.LogEntry(category=self.category, message=message)
 
     def write_multiple(self, spans):
         entries = [self.__span_to_entry(span) for span in spans]
-        self.transport.open()
-        self.client.Log(entries)
-        self.transport.close()
+        # TODO(will): The old implementation used to open and close transport here, with the new
+        # client based API this seems like the only way to get parity. Not sure if we would rather
+        # try persistent connections + reconnecting in the long run.
+        client = make_client(scribe_thrift.scribe,
+                             host=self.host,
+                             port=self.port,
+                             proto_factory=self.protocol_factory,
+                             trans_factory=self.transport_factory)
+        client.Log(entries)
+        client.close()
 
     def write(self, span):
         self.write_multiple([span])
-
-    def __build_log_message(self, span):
-        trans = TTransport.TMemoryBuffer()
-        protocol = TBinaryProtocol.TBinaryProtocolAccelerated(trans=trans)
-        span.write(protocol)
-        return base64.b64encode(trans.getvalue())
