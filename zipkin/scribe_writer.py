@@ -17,10 +17,11 @@ def _build_log_message(span):
 
 
 class ScribeWriter(object):
-    def __init__(self, host, port,  category='zipkin'):
+    def __init__(self, host, port,  category='zipkin', timeout=None):
         self.category = category
         self.host = host
         self.port = port
+        self.timeout = timeout
         self.protocol_factory = TBinaryProtocolFactory(strict_read=False, strict_write=False)
         self.transport_factory = TFramedTransportFactory()
 
@@ -37,6 +38,7 @@ class ScribeWriter(object):
         client = make_client(scribe_thrift.scribe,
                              host=self.host,
                              port=self.port,
+                             timeout=self.timeout,
                              proto_factory=self.protocol_factory,
                              trans_factory=self.transport_factory)
         client.Log(entries)
