@@ -6,10 +6,14 @@ from .thrift.zipkin_core import ttypes
 from .data_store import default as default_store
 
 
+def _get_my_ip():
+    return socket.gethostbyname(socket.gethostname())
+
+
 class ZipkinApi(object):
     def __init__(self, service_name=None, store=None, writer=None, host_addr=None):
         self.store = store or default_store
-        host_ip = host_addr or self._get_my_ip()
+        host_ip = host_addr or _get_my_ip()
         self.endpoint = ttypes.Endpoint(
             ipv4=self._ipv4_to_long(host_ip),
             port=None,
