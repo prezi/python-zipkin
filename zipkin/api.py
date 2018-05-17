@@ -7,10 +7,11 @@ from .data_store import default as default_store
 
 
 class ZipkinApi(object):
-    def __init__(self, service_name=None, store=None, writer=None):
+    def __init__(self, service_name=None, store=None, writer=None, host_addr=None):
         self.store = store or default_store
+        host_ip = host_addr or self._get_my_ip()
         self.endpoint = ttypes.Endpoint(
-            ipv4=self._get_my_ip(),
+            ipv4=self._ipv4_to_long(host_ip),
             port=None,
             service_name=service_name
         )
@@ -28,12 +29,6 @@ class ZipkinApi(object):
     def submit_span(self, timestamp_in_microseconds, duration_in_microseconds):
         self.writer.write(self._build_span(timestamp_in_microseconds, duration_in_microseconds))
         self.store.clear()
-
-    def _get_my_ip(self):
-        try:
-            return self._ipv4_to_long(socket.gethostbyname(socket.gethostname()))
-        except Exception:
-            return None
 
     def _build_span(self, timestamp_in_microseconds, duration_in_microseconds):
         zipkin_data = self.store.get()
@@ -89,8 +84,11 @@ class ZipkinApi(object):
 
     @staticmethod
     def _ipv4_to_long(ip):
-        packed_ip = socket.inet_aton(ip)
-        return struct.unpack("!i", packed_ip)[0]
+        try:
+            packed_ip = socket.inet_aton(ip)
+            return struct.unpack("!i", packed_ip)[0]
+        except:
+            return None
 
 
 api = ZipkinApi(store=default_store)
