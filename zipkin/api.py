@@ -7,8 +7,10 @@ from .data_store import default as default_store
 
 
 def _get_my_ip():
-    return socket.gethostbyname(socket.gethostname())
-
+    try:
+        return socket.gethostbyname(socket.gethostname())
+    except:
+        return None
 
 class ZipkinApi(object):
     def __init__(self, service_name=None, store=None, writer=None, host_addr=None):
