@@ -1,1 +1,2 @@
 include *.txt README.rst
+recursive-include zipkin *.thrift

@@ -1,8 +1,8 @@
 import threading
 import functools
 
-from zipkin_data import ZipkinData
-from _thrift.zipkinCore.ttypes import Annotation, BinaryAnnotation
+from .zipkin_data import ZipkinData
+from .thrift.zipkin_core import ttypes
 
 
 class BaseDataStore(object):
@@ -21,9 +21,9 @@ class BaseDataStore(object):
     def record(self, annotation):
         if not self.get().is_tracing():
             return
-        if isinstance(annotation, Annotation):
+        if isinstance(annotation, ttypes.Annotation):
             self._record_annotation(annotation)
-        elif isinstance(annotation, BinaryAnnotation):
+        elif isinstance(annotation, ttypes.BinaryAnnotation):
             self._record_binary_annotation(annotation)
         else:
             raise ValueError("Argument to %s.record must be an instance of Annotation or BinaryAnnotation" % self.__class__.__name__)

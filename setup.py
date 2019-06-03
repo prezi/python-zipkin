@@ -9,6 +9,7 @@ setup(
     author_email='zoltan.nagy@prezi.com, zsolt.dollenstein@prezi.com',
     url='https://github.com/prezi/python-zipkin',
     packages=find_packages(),
+    package_data={'zipkin': ['thrift/*.thrift']},
     license='Apache2',
     keywords='zipkin python',
     platforms=['any'],
@@ -25,7 +26,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    install_requires=['thrift >= 0.9.1'],
-    tests_require=['mock >= 1.0', 'unittest2 >= 0.5.1', 'pep8 >= 1.6.2'],
+    install_requires=['thriftpy >= 0.3.9', 'ply >= 3.9'],
+    tests_require=['mock >= 1.0', 'unittest2 >= 0.5.1', 'pep8 >= 1.6.2', 'facebook-scribe >= 2.0'],
     test_suite='zipkin.tests',
 )
