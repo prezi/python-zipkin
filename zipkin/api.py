@@ -40,13 +40,14 @@ class ZipkinApi(object):
         zipkin_data = self.store.get()
         return ttypes.Span(
             id=zipkin_data.span_id.get_binary(),
-            trace_id=zipkin_data.trace_id.get_binary(),
+            trace_id=zipkin_data.trace_id.get_binary_low_bytes(),
             parent_id=zipkin_data.parent_span_id.get_binary() if zipkin_data.parent_span_id is not None else None,
             name=self.store.get_rpc_name(),
             annotations=self.store.get_annotations(),
             binary_annotations=self.store.get_binary_annotations(),
             timestamp=timestamp_in_microseconds,
-            duration=duration_in_microseconds
+            duration=duration_in_microseconds,
+            trace_id_high=zipkin_data.trace_id.get_binary_high_bytes()
         )
 
     def _build_annotation(self, value):
