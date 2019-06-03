@@ -68,8 +68,7 @@ class ZipkinTraceId(object):
         return self.low
 
     def get_binary_high_bytes(self):
-        '''Return the high 64bit number of the Trace ID, if set. Originally,
-        Trace IDs were 64bits and thus the high-order 64bits may be all 0'''
+        '''Return the high 64bit number of the Trace ID.'''
         return self.high
 
     def get_hex(self):
